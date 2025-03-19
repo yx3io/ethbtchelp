@@ -67,6 +67,21 @@
             color: #FF0000; /* Red */
         }
 
+        /* Media query for mobile devices (max-width: 768px) */
+        @media (max-width: 768px) {
+            .ticker-container {
+                flex-direction: column; /* Stack items vertically */
+                white-space: normal; /* Allow text to wrap */
+                gap: 5px; /* Reduce the gap between items for better spacing */
+                padding: 5px; /* Reduce padding for smaller screens */
+            }
+
+            .ticker, .l2-counter, .vitalik-excuses, .gas-victims {
+                font-size: 14px; /* Slightly smaller font for mobile */
+                text-align: center; /* Center each line */
+            }
+        }
+
         /* Style the McDonald's pop-up ad */
         .mcdonalds-ad {
             position: fixed;
