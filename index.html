@@ -15,6 +15,7 @@
             justify-content: center; /* Center main content vertically */
             align-items: center; /* Center horizontally */
             position: relative; /* Allow absolute positioning for ticker */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
         }
 
         /* Style the text */
@@ -42,28 +43,28 @@
             border-radius: 5px;
             display: flex; /* Inline layout */
             align-items: center; /* Vertically center */
-            gap: 20px; /* Increased space between items for better readability */
+            gap: 20px; /* Space between items */
             white-space: nowrap; /* Prevent wrapping to a second line */
         }
 
         /* Style the ticker */
         .ticker {
-            color: #FF5733; /* Neon orange for snark */
+            color: #FF0000; /* Red */
         }
 
         /* Style the L2 failure counter */
         .l2-counter {
-            color: #FF5733; /* Neon orange */
+            color: #FF0000; /* Red */
         }
 
         /* Style the Vitalik's excuse counter */
         .vitalik-excuses {
-            color: #FF5733; /* Neon orange */
+            color: #FF0000; /* Red */
         }
 
         /* Style the gas fee victims counter */
         .gas-victims {
-            color: #FF5733; /* Neon orange */
+            color: #FF0000; /* Red */
         }
 
         /* Style the McDonald's pop-up ad */
@@ -98,6 +99,17 @@
             font-weight: bold;
             font-family: Arial, sans-serif;
         }
+
+        /* Style the canvas */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allow mouse events to pass through */
+            z-index: 500; /* Below pop-up ad but above other elements */
+        }
     </style>
 </head>
 <body>
@@ -118,18 +130,131 @@
         </div>
         <div class="m-logo">M</div>
     </div>
+    <canvas id="letterCanvas"></canvas>
 
     <script>
+        // Mouse Effect: MAKE RETAIL POOR AGAIN using Canvas
+        const canvas = document.getElementById('letterCanvas');
+        const ctx = canvas.getContext('2d');
+        const fullText = "MAKE RETAIL POOR AGAIN";
+        let currentIndex = 0;
+        let lastLetterTime = 0;
+        const letterDelay = 100; // 100ms delay between letters
+        const letters = []; // Store active letters for animation
+        let dpr = window.devicePixelRatio || 1; // Device pixel ratio for high-DPI displays
+
+        // Log the DPR for debugging
+        console.log('Device Pixel Ratio:', dpr);
+
+        // Set canvas size to match window, accounting for DPR
+        function resizeCanvas() {
+            // Set the CSS size to match the window
+            canvas.style.width = `${window.innerWidth}px`;
+            canvas.style.height = `${window.innerHeight}px`;
+
+            // Set the internal canvas size to match the window size scaled by DPR
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+
+            // Scale the canvas context to account for DPR
+            ctx.scale(dpr, dpr);
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Letter object to store position, text, and animation state
+        class Letter {
+            constructor(x, y, text) {
+                this.x = x;
+                this.y = y;
+                this.initialY = y; // Store initial Y position for debugging
+                this.text = text;
+                this.opacity = 1;
+                this.startTime = Date.now();
+                this.duration = 1000; // 1.5s duration for fade-out
+            }
+
+            draw() {
+                const elapsed = Date.now() - this.startTime;
+                const progress = elapsed / this.duration;
+                this.opacity = 1 - progress; // Linear fade from 1 to 0
+
+                // Apply a small movement in the scaled context (not adjusted for DPR)
+                const movement = progress * 30; // 4px in the scaled context over 1.5s
+                this.y = this.initialY - movement; // Move up by this amount
+
+                // Log the Y position change for debugging (only for the first few frames)
+                if (progress < 0.1 || progress > 0.9) {
+                    console.log(`Letter ${this.text}: Initial Y = ${this.initialY}, Current Y = ${this.y}, Movement = ${this.initialY - this.y}`);
+                }
+
+                if (this.opacity <= 0) return false; // Letter is done
+
+                ctx.font = '16px Arial';
+                ctx.fillStyle = `rgba(255, 0, 0, ${this.opacity})`; // Red with fading opacity
+                ctx.fillText(this.text, this.x, this.y);
+                return true; // Letter is still active
+            }
+        }
+
+        // Function to handle adding a letter at the mouse/touch position
+        function addLetter(x, y) {
+            const now = Date.now();
+            if (now - lastLetterTime < letterDelay) return; // Enforce delay between letters
+
+            // Add a new letter at the mouse/touch position
+            const letter = new Letter(x, y, fullText[currentIndex]);
+            letters.push(letter);
+
+            // Update index and reset if at the end of the phrase
+            currentIndex = (currentIndex + 1) % fullText.length;
+            lastLetterTime = now;
+        }
+
+        // Mouse movement handler
+        document.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            addLetter(posX, posY);
+        });
+
+        // Touch movement handler for mobile devices
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault(); // Prevent scrolling on touch
+            const touch = e.touches[0];
+            const posX = touch.clientX;
+            const posY = touch.clientY;
+            addLetter(posX, posY);
+        });
+
+        // Animation loop to draw and update letters
+        function animate() {
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+
+            // Draw all active letters and filter out expired ones
+            const activeLetters = [];
+            for (const letter of letters) {
+                if (letter.draw()) {
+                    activeLetters.push(letter);
+                }
+            }
+            letters.length = 0;
+            letters.push(...activeLetters);
+
+            // Request the next frame
+            requestAnimationFrame(animate);
+        }
+        animate();
+
         // L2 Failure Counter
         let l2Failures = 3;
         function incrementL2Failures() {
             l2Failures += Math.floor(Math.random() * 5) + 1; // Random increment between 1 and 5
             document.getElementById('l2-counter').innerText = `L2 Failures This Week: ${l2Failures}`;
-            // Schedule the next increment at a random interval between 3-10 seconds
             const randomInterval = (Math.random() * (10 - 3) + 3) * 1000; // 3-10 seconds in milliseconds
             setTimeout(incrementL2Failures, randomInterval);
         }
-        // Start the first increment
         incrementL2Failures();
 
         // Vitalik's Excuse Counter
@@ -137,11 +262,9 @@
         function incrementVitalikExcuses() {
             vitalikExcuses += Math.floor(Math.random() * 3) + 1; // Random increment between 1 and 3
             document.getElementById('vitalik-excuses').innerText = `Vitalik’s Excuses: ${vitalikExcuses}`;
-            // Schedule the next increment at a random interval between 3-10 seconds
             const randomInterval = (Math.random() * (10 - 3) + 3) * 1000; // 3-10 seconds in milliseconds
             setTimeout(incrementVitalikExcuses, randomInterval);
         }
-        // Start the first increment
         incrementVitalikExcuses();
 
         // Gas Fee Victims Counter
@@ -149,11 +272,9 @@
         function incrementGasVictims() {
             gasVictims += Math.floor(Math.random() * 5) + 1; // Random increment between 1 and 5
             document.getElementById('gas-victims').innerText = `Gas Fee Victims: ${gasVictims}`;
-            // Schedule the next increment at a random interval between 3-10 seconds
             const randomInterval = (Math.random() * (10 - 3) + 3) * 1000; // 3-10 seconds in milliseconds
             setTimeout(incrementGasVictims, randomInterval);
         }
-        // Start the first increment
         incrementGasVictims();
 
         // McDonald's Pop-Up Ad
@@ -170,17 +291,12 @@
         }
 
         function showAd() {
-            // Update the ad text with the live ratio
             document.getElementById('ad-main-text').innerHTML = `We’re hiring!<br>Would you like a career pivot with your fries?<br>HODLing ${currentRatio.toFixed(4)}? Try HODLing a spatula!`;
-            // Set random position
             setAdPosition();
-            // Show the ad
             ad.style.display = 'flex';
-            // Hide after 15 seconds
             setTimeout(() => {
                 ad.style.display = 'none';
-            }, 15000);
-            // Schedule the next appearance at a random interval between 10-20 seconds
+            }, 15000); // Hide after 15 seconds
             const randomInterval = (Math.random() * (20 - 10) + 10) * 1000; // 10-20 seconds in milliseconds
             setTimeout(showAd, randomInterval);
         }
@@ -198,11 +314,9 @@
                 currentRatio = ratio; // Update the global ratio for the ad
                 const ratioDisplay = document.getElementById('ratio');
                 ratioDisplay.innerText = `Agony Index: ${ratio.toFixed(4)}`;
-                ratioDisplay.style.color = ratio < 0.05 ? '#FF0000' : '#FF5733'; // Red if < 0.05, orange otherwise
-
-                // Show pop-up with updated message on page load
+                ratioDisplay.style.color = '#FF0000'; // Red regardless of ratio
                 if (ratio > 0.08) {
-                    alert(`wow, ${ratio.toFixed(4)} - L2s actually worked.`);
+                    alert(`Wow, ${ratio.toFixed(4)} - L2s actually worked.`);
                 } else if (ratio >= 0.05 && ratio <= 0.07) {
                     alert(`${ratio.toFixed(4)} - meh, not dead yet, validator says real.`);
                 } else if (ratio < 0.04) {
