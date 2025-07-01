@@ -4,139 +4,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Reset default margins and set full height */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            background-color: #ffffff; /* Pure white background */
+            background-color: #ffffff;
             display: flex;
-            flex-direction: column; /* Stack content vertically */
-            justify-content: center; /* Center main content vertically */
-            align-items: center; /* Center horizontally */
-            position: relative; /* Allow absolute positioning for ticker */
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        /* Style the text */
         .message {
-            font-family: Arial, sans-serif; /* Arial Regular */
-            font-size: 18px; /* 18px text size */
-            color: #000000; /* Black text */
-            text-align: center; /* Center text within its block */
-            padding: 20px; /* Breathing room */
-            max-width: 90%; /* Prevent overflow */
-            word-wrap: break-word; /* Wrap long words */
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            color: #000000;
+            text-align: center;
+            padding: 20px;
+            max-width: 100%;
+            white-space: nowrap; /* Keeps it on one line */
         }
 
-        /* Style the ticker and counters container */
         .ticker-container {
-            position: absolute; /* Fix to bottom */
-            bottom: 10px; /* Position at the bottom */
-            left: 50%; /* Center horizontally */
-            transform: translateX(-50%); /* Offset by half its width */
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             font-family: Arial, sans-serif;
-            font-size: 16px; /* Slightly smaller than main text */
+            font-size: 16px;
             text-align: center;
             padding: 10px;
-            background: rgba(255, 255, 255, 0.8); /* Slight white backdrop */
+            background: rgba(255, 255, 255, 0.8);
             border-radius: 5px;
-            display: flex; /* Inline layout */
-            align-items: center; /* Vertically center */
-            gap: 20px; /* Space between items */
-            white-space: nowrap; /* Prevent wrapping to a second line */
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            white-space: nowrap;
         }
 
-        /* Style the ticker */
-        .ticker {
-            color: #FF0000; /* Red */
+        .ticker, .l2-counter, .vitalik-excuses, .gas-victims {
+            color: #FF0000;
         }
 
-        /* Style the L2 failure counter */
-        .l2-counter {
-            color: #FF0000; /* Red */
-        }
-
-        /* Style the Vitalik's excuse counter */
-        .vitalik-excuses {
-            color: #FF0000; /* Red */
-        }
-
-        /* Style the gas fee victims counter */
-        .gas-victims {
-            color: #FF0000; /* Red */
-        }
-
-        /* Media query for mobile devices (max-width: 768px) */
         @media (max-width: 768px) {
             .ticker-container {
-                flex-direction: column; /* Stack items vertically */
-                white-space: normal; /* Allow text to wrap */
-                gap: 5px; /* Reduce the gap between items for better spacing */
-                padding: 5px; /* Reduce padding for smaller screens */
+                flex-direction: column;
+                white-space: normal;
+                gap: 5px;
+                padding: 5px;
             }
 
             .ticker, .l2-counter, .vitalik-excuses, .gas-victims {
-                font-size: 14px; /* Slightly smaller font for mobile */
-                text-align: center; /* Center each line */
+                font-size: 14px;
+                text-align: center;
             }
         }
 
-        /* Style the McDonald's pop-up ad */
         .mcdonalds-ad {
             position: fixed;
-            width: 300px; /* Adjusted to fit text */
-            height: 150px; /* Adjusted to fit text and logo */
-            background-color: #FFFFFF; /* White background */
-            border: 2px solid #FF0000; /* McDonald's red border */
+            width: 300px;
+            height: 150px;
+            background-color: #FFFFFF;
+            border: 2px solid #FF0000;
             border-radius: 5px;
-            display: none; /* Hidden by default */
-            z-index: 1000; /* On top of other elements */
+            display: none;
+            z-index: 1000;
             font-family: Arial, sans-serif;
-            color: #000000; /* Black text for main message */
+            color: #000000;
             text-align: center;
             padding: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            cursor: pointer; /* Click to close */
+            cursor: pointer;
             flex-direction: column;
-            justify-content: space-between; /* Space out content */
+            justify-content: space-between;
             align-items: center;
         }
 
         .mcdonalds-ad .main-text {
             font-size: 14px;
-            line-height: 1.4; /* Better spacing for readability */
+            line-height: 1.4;
         }
 
         .mcdonalds-ad .m-logo {
             font-size: 40px;
-            color: #FFD700; /* Golden M */
+            color: #FFD700;
             font-weight: bold;
             font-family: Arial, sans-serif;
         }
 
-        /* Style the canvas */
         canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; /* Allow mouse events to pass through */
-            z-index: 500; /* Below pop-up ad but above other elements */
+            pointer-events: none;
+            z-index: 500;
         }
     </style>
 </head>
 <body>
     <div class="message">
-        Euripides’ final act, written in exile after shorting ETH and offending Zeus.​
+        Euripides’ final act, written in exile after shorting ETH and offending Zeus.
     </div>
+
     <div class="ticker-container">
         <span class="ticker" id="ratio">Agony Index: Loading...</span>
         <span class="l2-counter" id="l2-counter">L2 Failures This Week: 3</span>
         <span class="vitalik-excuses" id="vitalik-excuses">Vitalik’s Excuses: 7</span>
         <span class="gas-victims" id="gas-victims">Gas Fee Victims: 420</span>
     </div>
+
     <div class="mcdonalds-ad" id="mcdonalds-ad" onclick="closeAd()">
         <div class="main-text" id="ad-main-text">
             We’re hiring!<br>
@@ -145,109 +125,75 @@
         </div>
         <div class="m-logo">M</div>
     </div>
+
     <canvas id="letterCanvas"></canvas>
 
     <script>
-        // Mouse Effect: MAKE RETAIL POOR AGAIN using Canvas
         const canvas = document.getElementById('letterCanvas');
         const ctx = canvas.getContext('2d');
         const fullText = "MAKE RETAIL POOR AGAIN";
         let currentIndex = 0;
         let lastLetterTime = 0;
-        const letterDelay = 100; // 100ms delay between letters
-        const letters = []; // Store active letters for animation
-        let dpr = window.devicePixelRatio || 1; // Device pixel ratio for high-DPI displays
+        const letterDelay = 100;
+        const letters = [];
+        let dpr = window.devicePixelRatio || 1;
 
-        // Log the DPR for debugging
-        console.log('Device Pixel Ratio:', dpr);
-
-        // Set canvas size to match window, accounting for DPR
         function resizeCanvas() {
-            // Set the CSS size to match the window
             canvas.style.width = `${window.innerWidth}px`;
             canvas.style.height = `${window.innerHeight}px`;
-
-            // Set the internal canvas size to match the window size scaled by DPR
             canvas.width = window.innerWidth * dpr;
             canvas.height = window.innerHeight * dpr;
-
-            // Scale the canvas context to account for DPR
             ctx.scale(dpr, dpr);
         }
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // Letter object to store position, text, and animation state
         class Letter {
             constructor(x, y, text) {
                 this.x = x;
                 this.y = y;
-                this.initialY = y; // Store initial Y position for debugging
+                this.initialY = y;
                 this.text = text;
                 this.opacity = 1;
                 this.startTime = Date.now();
-                this.duration = 1000; // 1.5s duration for fade-out
+                this.duration = 1000;
             }
 
             draw() {
                 const elapsed = Date.now() - this.startTime;
                 const progress = elapsed / this.duration;
-                this.opacity = 1 - progress; // Linear fade from 1 to 0
-
-                // Apply a small movement in the scaled context (not adjusted for DPR)
-                const movement = progress * 30; // 4px in the scaled context over 1.5s
-                this.y = this.initialY - movement; // Move up by this amount
-
-                // Log the Y position change for debugging (only for the first few frames)
-                if (progress < 0.1 || progress > 0.9) {
-                    console.log(`Letter ${this.text}: Initial Y = ${this.initialY}, Current Y = ${this.y}, Movement = ${this.initialY - this.y}`);
-                }
-
-                if (this.opacity <= 0) return false; // Letter is done
-
+                this.opacity = 1 - progress;
+                const movement = progress * 30;
+                this.y = this.initialY - movement;
+                if (this.opacity <= 0) return false;
                 ctx.font = '16px Arial';
-                ctx.fillStyle = `rgba(255, 0, 0, ${this.opacity})`; // Red with fading opacity
+                ctx.fillStyle = `rgba(255, 0, 0, ${this.opacity})`;
                 ctx.fillText(this.text, this.x, this.y);
-                return true; // Letter is still active
+                return true;
             }
         }
 
-        // Function to handle adding a letter at the mouse/touch position
         function addLetter(x, y) {
             const now = Date.now();
-            if (now - lastLetterTime < letterDelay) return; // Enforce delay between letters
-
-            // Add a new letter at the mouse/touch position
+            if (now - lastLetterTime < letterDelay) return;
             const letter = new Letter(x, y, fullText[currentIndex]);
             letters.push(letter);
-
-            // Update index and reset if at the end of the phrase
             currentIndex = (currentIndex + 1) % fullText.length;
             lastLetterTime = now;
         }
 
-        // Mouse movement handler
         document.addEventListener('mousemove', (e) => {
-            const posX = e.clientX;
-            const posY = e.clientY;
-            addLetter(posX, posY);
+            addLetter(e.clientX, e.clientY);
         });
 
-        // Touch movement handler for mobile devices
         document.addEventListener('touchmove', (e) => {
-            e.preventDefault(); // Prevent scrolling on touch
+            e.preventDefault();
             const touch = e.touches[0];
-            const posX = touch.clientX;
-            const posY = touch.clientY;
-            addLetter(posX, posY);
+            addLetter(touch.clientX, touch.clientY);
         });
 
-        // Animation loop to draw and update letters
         function animate() {
-            // Clear the canvas
             ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
-
-            // Draw all active letters and filter out expired ones
             const activeLetters = [];
             for (const letter of letters) {
                 if (letter.draw()) {
@@ -256,49 +202,40 @@
             }
             letters.length = 0;
             letters.push(...activeLetters);
-
-            // Request the next frame
             requestAnimationFrame(animate);
         }
         animate();
 
-        // L2 Failure Counter
         let l2Failures = 3;
         function incrementL2Failures() {
-            l2Failures += Math.floor(Math.random() * 5) + 1; // Random increment between 1 and 5
+            l2Failures += Math.floor(Math.random() * 5) + 1;
             document.getElementById('l2-counter').innerText = `L2 Failures This Week: ${l2Failures}`;
-            const randomInterval = (Math.random() * (10 - 3) + 3) * 1000; // 3-10 seconds in milliseconds
-            setTimeout(incrementL2Failures, randomInterval);
+            setTimeout(incrementL2Failures, (Math.random() * 7000 + 3000));
         }
         incrementL2Failures();
 
-        // Vitalik's Excuse Counter
         let vitalikExcuses = 7;
         function incrementVitalikExcuses() {
-            vitalikExcuses += Math.floor(Math.random() * 3) + 1; // Random increment between 1 and 3
+            vitalikExcuses += Math.floor(Math.random() * 3) + 1;
             document.getElementById('vitalik-excuses').innerText = `Vitalik’s Excuses: ${vitalikExcuses}`;
-            const randomInterval = (Math.random() * (10 - 3) + 3) * 1000; // 3-10 seconds in milliseconds
-            setTimeout(incrementVitalikExcuses, randomInterval);
+            setTimeout(incrementVitalikExcuses, (Math.random() * 7000 + 3000));
         }
         incrementVitalikExcuses();
 
-        // Gas Fee Victims Counter
         let gasVictims = 420;
         function incrementGasVictims() {
-            gasVictims += Math.floor(Math.random() * 5) + 1; // Random increment between 1 and 5
+            gasVictims += Math.floor(Math.random() * 5) + 1;
             document.getElementById('gas-victims').innerText = `Gas Fee Victims: ${gasVictims}`;
-            const randomInterval = (Math.random() * (10 - 3) + 3) * 1000; // 3-10 seconds in milliseconds
-            setTimeout(incrementGasVictims, randomInterval);
+            setTimeout(incrementGasVictims, (Math.random() * 7000 + 3000));
         }
         incrementGasVictims();
 
-        // McDonald's Pop-Up Ad
         const ad = document.getElementById('mcdonalds-ad');
-        let currentRatio = 0; // Store the live ratio for the ad
+        let currentRatio = 0;
 
         function setAdPosition() {
-            const maxX = window.innerWidth - 300; // Ad width
-            const maxY = window.innerHeight - 150; // Ad height
+            const maxX = window.innerWidth - 300;
+            const maxY = window.innerHeight - 150;
             const randomX = Math.floor(Math.random() * maxX);
             const randomY = Math.floor(Math.random() * maxY);
             ad.style.left = `${randomX}px`;
@@ -311,25 +248,23 @@
             ad.style.display = 'flex';
             setTimeout(() => {
                 ad.style.display = 'none';
-            }, 15000); // Hide after 15 seconds
-            const randomInterval = (Math.random() * (20 - 10) + 10) * 1000; // 10-20 seconds in milliseconds
-            setTimeout(showAd, randomInterval);
+            }, 15000);
+            setTimeout(showAd, (Math.random() * 10000 + 10000));
         }
 
         function closeAd() {
             ad.style.display = 'none';
         }
 
-        // Live ETH/BTC ratio ticker and pop-up
         async function updateRatio() {
             try {
                 const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=btc');
                 const data = await response.json();
                 const ratio = data.ethereum.btc;
-                currentRatio = ratio; // Update the global ratio for the ad
+                currentRatio = ratio;
                 const ratioDisplay = document.getElementById('ratio');
                 ratioDisplay.innerText = `Agony Index: ${ratio.toFixed(4)}`;
-                ratioDisplay.style.color = '#FF0000'; // Red regardless of ratio
+                ratioDisplay.style.color = '#FF0000';
                 if (ratio > 0.08) {
                     alert(`Wow, ${ratio.toFixed(4)} - L2s actually worked.`);
                 } else if (ratio >= 0.05 && ratio <= 0.07) {
@@ -342,15 +277,11 @@
             }
         }
 
-        // Initial load (pop-up triggers here) and auto-refresh every 30 seconds
         updateRatio();
         setInterval(updateRatio, 30000);
 
-        // Ensure the ad is hidden initially and show after 3 seconds
         ad.style.display = 'none';
-        setTimeout(() => {
-            showAd();
-        }, 3000);
+        setTimeout(showAd, 3000);
     </script>
 </body>
 </html>
